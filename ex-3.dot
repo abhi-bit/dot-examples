@@ -1,4 +1,4 @@
-idigraph dfd2{
+digraph dfd2{
         node[shape=record]
         subgraph level0{
         enti1 [label="Customer" shape=box];
