@@ -1,30 +1,38 @@
 digraph agg_arch {
         node[shape=record color=blue]
-        subgraph level0 {
+        subgraph cluster_level0 {
         entity1 [fontname="serif" label="CleverTap Kafka Log", color=red, fillcolor=yellow, style=filled];
-        entity2 [fontname="serif" label="Dagger per metric (BCR)"];
-        entity3 [fontname="serif" label="Booking Log", color=red, fillcolor=yellow, style=filled];
+        entity2 [fontname="serif" label="Booking Log", color=red, fillcolor=yellow, style=filled];
+        entity3 [fontname="serif" label="Dagger per metric (BCR)"];
+        entity4 [fontname="serif" label="Big Query", color=red];
+        // {rank=same; entity3, entity4}
         }
 
         subgraph cluster_level1 {
-            color=blue style=bold fontname="times bold italic" fontsize=24 label = "Backend Service";
-            block1 [fontname="serif" label="Clustered Database", shape=box];
-            block2 [fontname="serif" label="Litmus events Kafka consumer", shape=box, fillcolor=green, style=filled];
-            block3 [fontname="serif" label="Analytics/Reporting Dashboard", shape=box];
-            block4 [fontname="serif" label="Dagger sink Kafka consumer", shape=box, fillcolor=green, style=filled];
-            block5 [fontname="serif" label="InfluxDB for live reporting", shape=box];
-            block6 [fontname="serif" label="Go-stats input collection", shape=box];
-        {rank=same; block1, block2, block6}
-        {rank=same; block3, block4, block5}
+            color=blue style=bold fontname="times bold" fontsize=24 label = "Backend Service";
+            block1 [fontname="serif" label="Database \n* Store Exp run report\n* InfluxDB raw data for metrics", shape=box];
+            block2 [fontname="serif" label="Analytics/Reporting Dashboard", shape=box];
+            block3 [fontname="serif" label="InfluxDB for live reporting", shape=box];
+            block4 [fontname="serif" label="Go-stats input collection", shape=box];
+        {rank=same; block1, block4}
+        {rank=same; block2, block3}
         }
-        entity1->entity2
-        entity3->entity2
-        entity1->block2
-        entity2->block4 [label="Sink to Kafka"]
+        e_block1 [label="Dagger Kafka Sink Topic", shape=box]
+        e_block2 [label="Big Query from Dagger Sink", shape=box]
+        e_block3 [label="Big Query from CT topic", shape=box]
+
+        entity1->entity3
+        entity2->entity3
+        entity3->entity4 [label="Kafka sink from Dagger"]
+        entity1->entity4 [label="Sink 'Experiment_Started' events"]
+
+        e_block1->block3 [label="Firehose"]
+        block3->block2
+
+        e_block2->block4
+        block4->block2
+        block1->block2
         block2->block1
-        block4->block6
-        block4->block5
-        block5->block3
-        block1->block3
-        block6->block1
+
+        e_block3->block1
 }
