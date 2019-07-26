@@ -1,0 +1,30 @@
+digraph agg_arch {
+        node[shape=record color=blue]
+        subgraph level0 {
+        entity1 [fontname="serif" label="CleverTap Kafka Log", color=red, fillcolor=yellow, style=filled];
+        entity2 [fontname="serif" label="Dagger per metric (BCR)"];
+        entity3 [fontname="serif" label="Booking Log", color=red, fillcolor=yellow, style=filled];
+        }
+
+        subgraph cluster_level1 {
+            color=blue style=bold fontname="times bold italic" fontsize=24 label = "Backend Service";
+            block1 [fontname="serif" label="Clustered Database", shape=box];
+            block2 [fontname="serif" label="Litmus events Kafka consumer", shape=box, fillcolor=green, style=filled];
+            block3 [fontname="serif" label="Analytics/Reporting Dashboard", shape=box];
+            block4 [fontname="serif" label="Dagger sink Kafka consumer", shape=box, fillcolor=green, style=filled];
+            block5 [fontname="serif" label="InfluxDB for live reporting", shape=box];
+            block6 [fontname="serif" label="Go-stats input collection", shape=box];
+        {rank=same; block1, block2, block6}
+        {rank=same; block3, block4, block5}
+        }
+        entity1->entity2
+        entity3->entity2
+        entity1->block2
+        entity2->block4 [label="Sink to Kafka"]
+        block2->block1
+        block4->block6
+        block4->block5
+        block5->block3
+        block1->block3
+        block6->block1
+}
